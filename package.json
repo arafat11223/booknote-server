@@ -1,9 +1,9 @@
-
 {
   "name": "booknook-server",
   "version": "1.0.0",
   "description": "BookNook Online Library Backend API",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@better-auth/mongo-adapter": "^1.7.26",
     "better-auth": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

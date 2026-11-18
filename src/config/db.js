@@ -1,26 +1,19 @@
 
-const { MongoClient } = require("mongodb");
+import { MongoClient } from "mongodb";
 
-let client;
-let db;
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  throw new Error("MONGODB_URI is missing in environment variables");
+}
+
+const client = new MongoClient(uri);
+
+const db = client.db(process.env.DB_NAME || "booknook");
 
 const connectDB = async () => {
   try {
-    if (db) {
-      return db;
-    }
-
-    const uri = process.env.MONGODB_URI;
-
-    if (!uri) {
-      throw new Error("MONGODB_URI is missing in environment variables");
-    }
-
-    client = new MongoClient(uri);
-
     await client.connect();
-
-    db = client.db(process.env.DB_NAME || "booknook");
 
     console.log("MongoDB connected successfully!");
 
@@ -31,15 +24,6 @@ const connectDB = async () => {
   }
 };
 
-const getDB = () => {
-  if (!db) {
-    throw new Error("Database is not connected yet!");
-  }
+const getDB = () => db;
 
-  return db;
-};
-
-module.exports = {
-  connectDB,
-  getDB,
-};
+export { client, db, connectDB, getDB };

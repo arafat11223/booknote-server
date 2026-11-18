@@ -1,14 +1,23 @@
-const express = require("express");
-const cors = require("cors");
+
+import express from "express";
+import cors from "cors";
+import { toNodeHandler } from "better-auth/node";
+import errorHandler from "./middlewares/error-handler.js";
+import { auth } from "./config/auth.js";
+import verifyToken from "./middlewares/verify-token.js";
+import bookRoutes from "./routes/book.routes.js";
 
 const app = express();
 
 app.use(
   cors({
     origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,8 +33,19 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
     message: "BookNook Server is running successfully.",
-    timestamp: new Date().toISOString(),
   });
 });
 
-module.exports = app;
+app.get("/api/protected", verifyToken, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "JWT verification successful!",
+    user: req.user,
+    userId: req.userId,
+  });
+});
+
+app.use("/books", bookRoutes);
+app.use(errorHandler);
+
+export default app;
