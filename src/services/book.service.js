@@ -1,5 +1,5 @@
 
-import { booksCollection } from "../config/collections.js";
+import { booksCollection, borrowsCollection } from "../config/collections.js";
 
 const getAllBooks = async () => {
   return await booksCollection
@@ -31,7 +31,7 @@ const createBook = async (bookData) => {
 };
 
 const updateBook = async (id, updateData) => {
-  const result = await booksCollection.findOneAndUpdate(
+  return await booksCollection.findOneAndUpdate(
     { _id: id },
     {
       $set: {
@@ -41,12 +41,26 @@ const updateBook = async (id, updateData) => {
     },
     { returnDocument: "after" }
   );
-
-  return result;
 };
 
 const deleteBook = async (id) => {
-  return await booksCollection.deleteOne({ _id: id });
+  const activeBorrow = await borrowsCollection.findOne({
+    bookId: id,
+    status: "borrowed",
+  });
+
+  if (activeBorrow) {
+    return {
+      deleted: false,
+      reason: "ACTIVE_BORROWS_EXIST",
+    };
+  }
+
+  const result = await booksCollection.deleteOne({ _id: id });
+
+  return {
+    deleted: result.deletedCount === 1,
+  };
 };
 
 export {

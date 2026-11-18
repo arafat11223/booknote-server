@@ -2,10 +2,12 @@
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import errorHandler from "./middlewares/error-handler.js";
+
 import { auth } from "./config/auth.js";
 import verifyToken from "./middlewares/verify-token.js";
 import bookRoutes from "./routes/book.routes.js";
+import borrowRoutes from "./routes/borrow.routes.js";
+import errorHandler from "./middlewares/error-handler.js";
 
 const app = express();
 
@@ -46,6 +48,8 @@ app.get("/api/protected", verifyToken, (req, res) => {
 });
 
 app.use("/books", bookRoutes);
+app.use("/borrows", borrowRoutes);
+
 app.use(errorHandler);
 
 export default app;

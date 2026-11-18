@@ -8,14 +8,28 @@ if (!uri) {
 }
 
 const client = new MongoClient(uri);
-
 const db = client.db(process.env.DB_NAME || "booknook");
 
 const connectDB = async () => {
   try {
     await client.connect();
 
+    await db.collection("borrows").createIndex(
+      {
+        bookId: 1,
+        userId: 1,
+      },
+      {
+        unique: true,
+        partialFilterExpression: {
+          status: "borrowed",
+        },
+        name: "unique_active_borrow_per_user_book",
+      }
+    );
+
     console.log("MongoDB connected successfully!");
+    console.log("Borrow indexes created successfully!");
 
     return db;
   } catch (error) {

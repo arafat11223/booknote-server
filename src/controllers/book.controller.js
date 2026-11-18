@@ -291,6 +291,7 @@ const editBook = async (req, res, next) => {
   }
 };
 
+
 const removeBook = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -318,7 +319,14 @@ const removeBook = async (req, res, next) => {
       });
     }
 
-    await deleteBook(new ObjectId(id));
+    const result = await deleteBook(new ObjectId(id));
+
+    if (!result.deleted) {
+      return res.status(409).json({
+        success: false,
+        message: "This book cannot be deleted while it has active borrows.",
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -328,6 +336,7 @@ const removeBook = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export {
   getBooks,
