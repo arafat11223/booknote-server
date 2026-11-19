@@ -5,6 +5,11 @@ import { jwt } from "better-auth/plugins";
 
 import { db, client } from "./db.js";
 
+const trustedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
@@ -14,7 +19,7 @@ export const auth = betterAuth({
 
   baseURL: process.env.BETTER_AUTH_URL,
 
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins,
 
   emailAndPassword: {
     enabled: true,
