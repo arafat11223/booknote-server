@@ -1,5 +1,7 @@
 
 import { jwtVerify, createRemoteJWKSet } from "jose";
+import { ObjectId } from "mongodb";
+
 import { db } from "../config/db.js";
 
 const AUTH_URL = process.env.BETTER_AUTH_URL;
@@ -26,15 +28,15 @@ const verifyToken = async (req, res, next) => {
       audience: AUTH_URL,
     });
 
-    if (!payload.sub) {
+    if (!payload.sub || !ObjectId.isValid(payload.sub)) {
       return res.status(401).json({
         success: false,
-        message: "Invalid token payload.",
+        message: "Invalid token user ID.",
       });
     }
 
     const user = await db.collection("user").findOne({
-      _id: payload.sub,
+      _id: new ObjectId(payload.sub),
     });
 
     if (!user) {
@@ -45,7 +47,7 @@ const verifyToken = async (req, res, next) => {
     }
 
     req.user = {
-      id: user._id,
+      id: user._id.toString(),
       name: user.name,
       email: user.email,
     };

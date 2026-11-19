@@ -172,7 +172,10 @@ const editBook = async (req, res, next) => {
       });
     }
 
-    if (existingBook.addedBy.userId !== req.userId) {
+    if (
+      existingBook.addedBy.userId.toString() !==
+      req.userId.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: "You can only update your own books.",
@@ -291,7 +294,6 @@ const editBook = async (req, res, next) => {
   }
 };
 
-
 const removeBook = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -312,7 +314,10 @@ const removeBook = async (req, res, next) => {
       });
     }
 
-    if (existingBook.addedBy.userId !== req.userId) {
+    if (
+      existingBook.addedBy.userId.toString() !==
+      req.userId.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: "You can only delete your own books.",
@@ -336,7 +341,6 @@ const removeBook = async (req, res, next) => {
     next(error);
   }
 };
-
 
 export {
   getBooks,
