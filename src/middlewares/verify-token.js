@@ -6,9 +6,11 @@ import { db } from "../config/db.js";
 
 const AUTH_URL = process.env.BETTER_AUTH_URL;
 
-const JWKS = createRemoteJWKSet(
-  new URL(`${AUTH_URL}/api/auth/jwks`)
-);
+const JWKS_URL =
+  process.env.BETTER_AUTH_JWKS_URL ||
+  `${AUTH_URL}/api/auth/jwks`;
+
+const JWKS = createRemoteJWKSet(new URL(JWKS_URL));
 
 const verifyToken = async (req, res, next) => {
   try {

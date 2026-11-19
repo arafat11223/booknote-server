@@ -6,8 +6,10 @@ import { jwt } from "better-auth/plugins";
 import { db, client } from "./db.js";
 
 const trustedOrigins = [
-  "http://localhost:3000",
   process.env.FRONTEND_URL,
+  ...(process.env.NODE_ENV !== "production"
+    ? ["http://localhost:3000"]
+    : []),
 ].filter(Boolean);
 
 export const auth = betterAuth({
